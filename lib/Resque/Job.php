@@ -158,6 +158,21 @@ class Resque_Job
 			return $this->instance;
 		}
 
+		$this->instance = new $this->getClass();
+		$this->instance->job = $this;
+		$this->instance->args = $this->getArguments();
+		$this->instance->queue = $this->queue;
+		return $this->instance;
+	}
+
+	/**
+	 * Get the fully qualified classname of this job
+	 * 
+	 * @return  string 				classname of the job
+	 * @throws  Resque_Exception 	If class doesn't exist or unfit to execute perform the job
+	 */
+
+	public function getClass() {
 		if(!class_exists($this->payload['class'])) {
 			throw new Resque_Exception(
 				'Could not find job class ' . $this->payload['class'] . '.'
@@ -170,11 +185,7 @@ class Resque_Job
 			);
 		}
 
-		$this->instance = new $this->payload['class'];
-		$this->instance->job = $this;
-		$this->instance->args = $this->getArguments();
-		$this->instance->queue = $this->queue;
-		return $this->instance;
+		return $this->payload['class'];
 	}
 
 	/**
