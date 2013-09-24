@@ -17,15 +17,18 @@ class Resque_Failure
 	/**
 	 * Create a new failed job on the backend.
 	 *
-	 * @param object $payload        The contents of the job that has just failed.
+	 * @param \Resque_Job $job       The job that has just failed.
 	 * @param \Exception $exception  The exception generated when the job failed to run.
 	 * @param \Resque_Worker $worker Instance of Resque_Worker that was running this job when it failed.
 	 * @param string $queue          The name of the queue that this job was fetched from.
+	 * @param string $backend        optional - The class of a custom Failure, defaults to default backend
 	 */
-	public static function create($payload, Exception $exception, Resque_Worker $worker, $queue)
+	public static function create($job, Exception $exception, Resque_Worker $worker, $queue, $backend = null)
 	{
-		$backend = self::getBackend();
-		new $backend($payload, $exception, $worker, $queue);
+		if (!class_exists($backend)) {
+			$backend = self::getBackend();
+		}
+		new $backend($job, $exception, $worker, $queue);
 	}
 
 	/**

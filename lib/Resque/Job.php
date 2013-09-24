@@ -29,6 +29,12 @@ class Resque_Job
 	private $instance;
 
 	/**
+	 * @var string Class of failure backend to use upon failure.
+	 */
+	public $failureBackend = null;
+
+
+	/**
 	 * Instantiate a new instance of a job.
 	 *
 	 * @param string $queue The queue that the job belongs to.
@@ -236,10 +242,11 @@ class Resque_Job
 
 		$this->updateStatus(Resque_Job_Status::STATUS_FAILED);
 		Resque_Failure::create(
-			$this->payload,
+			$this,
 			$exception,
 			$this->worker,
-			$this->queue
+			$this->queue,
+			$this->failureBackend
 		);
 		Resque_Stat::incr('failed');
 		Resque_Stat::incr('failed:' . $this->worker);
