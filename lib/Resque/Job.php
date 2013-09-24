@@ -158,7 +158,8 @@ class Resque_Job
 			return $this->instance;
 		}
 
-		$this->instance = new $this->getClass();
+		$className = $this->getClass();
+		$this->instance = new $className;
 		$this->instance->job = $this;
 		$this->instance->args = $this->getArguments();
 		$this->instance->queue = $this->queue;
